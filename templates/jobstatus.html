@@ -1,0 +1,80 @@
+{% extends 'base1.html' %}
+{% load static %}
+{% block mystyle %}
+<style>
+    input.changinput {
+        width: 111px;
+    }
+    .formss {
+        padding: 5px 0px 5px 2px !important;
+    }
+    .disaplayInput{
+        display: none;
+    }
+</style>
+{% endblock %}
+{% block upjs %}
+
+
+{% endblock %}
+{% block pageheading %}
+Job Status
+{% endblock %}
+
+{% block currpage %}
+Job Status
+{% endblock %} 
+{% block headerbutton %}
+
+{% comment %} <div class="dropdown">
+    <a class="btn btn-primary btn-color" href="#" role="button" data-toggle="modal" data-target="#new-product">
+            Add New Job
+        </a>
+     {% include "addnew.html" with Product=Product%}
+</div> {% endcomment %}
+{% endblock %}    
+{% block content %}
+<div class="row-wrap mb-20 ">
+    <div class="card-box mb-30">
+        <div class="pd-20">
+            <h4 class="text-blue h4">All Jobs</h4>
+        </div>
+        <div class="pb-20">
+            
+            {% include "tabledata.html" with Product=Product %}
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="success-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-body text-center font-18">
+                <h3 class="mb-20" id="body-text"></h3>
+                <div class="mb-30 text-center"><img src={% static "/vendors/images/success.png"%}></div>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-primary btn-color" onclick=reloadpage()>Done</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}  
+
+<!-- MAIN CONTAINER END -->
+
+{% block js %}
+<!-- Datatable -->]
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" /> 
+{% comment %} <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script> {% endcomment %}
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+<script src={% static 'src/plugins/datatables/js/jquery.dataTables.min.js' %}></script>
+<script src={% static 'src/plugins/datatables/js/dataTables.bootstrap4.min.js' %}></script>
+<script src={% static 'src/plugins/datatables/js/dataTables.responsive.min.js' %}></script>
+<script src={% static 'src/plugins/datatables/js/responsive.bootstrap4.min.js' %}></script>
+<!-- Datatable Setting js -->
+<script src={% static 'vendors/scripts/datatable-setting.js' %}></script>
+<script src={% static 'js/adminpage.js' %}></script>
+
+{% endblock %}
+
+{% comment %} {% endcomment %}

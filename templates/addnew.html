@@ -1,0 +1,833 @@
+{% load static %}
+{% comment %} New Challan Invoice {% endcomment %}
+<div class="modal fade bs-example-modal-lg" id="new-challan" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="text-align:left;">
+            <form id="addnewchallan" method="POST" >
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myLargeModalLabel">New Challan</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+                <div class="modal-body">
+                    <!-- <form> -->
+                    <div class="newchallan_input_fields_wrap">
+                        <div class="row">
+                            <div class="col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Challan No. <strong>MG{{Challans.last.Challan_no|add:'1'}}</strong </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group" >
+                                    <label>Company Name</label>
+                                    <input class="form-control" type="text" placeholder="Company Name" id="nc-companyname">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 col-sm-12">
+                                <div class="form-group" >
+                                    <label>Contact Person</label>
+                                    <input class="form-control" type="text" placeholder="Contact Person" id="nc-contactperson">
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Mobile No.</label>
+                                    <input class="form-control" pattern="[6-9]{1}[0-9]{9}" required="true" type="tel" id="nc-mobno">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            {% comment %} <div class="col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Remark</label>
+                                    <input class="form-control" required="true" type="text" id="nc-remark">
+                                </div>
+                            </div> {% endcomment %}
+                            <div class="col-md-6 col-sm-12">
+                                <div class="form-group" >
+                                    <label>Designer</label>
+                                    <select class="custom-select" id="nc-designer" required="true">
+                                        <option selected="">Choose...</option>
+                                        {% for designer in Designer%}
+                                        <option value={{designer.Designer_name}}>{{designer.Designer_name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-sm-12">
+                                <div class="form-group" >
+                                    <label>Status</label>
+                                    <select class="custom-select" id="nc-status" required="true">
+                                        <option selected="">Choose...</option>
+                                        <option value="Ready">Ready</option>
+                                        <option value="Waiting">Waiting</option>
+                                        <option value="Pending">Pending</option>
+                                        <option value="Delivered">Delivered</option>
+                                        <option value="Assigned">Assigned</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <button style={"background-color:green;"} class="newchallan_add_field_button btn btn-info active">Add Particulars</button>
+                        </div>
+                    </div>
+                    <!-- </form> -->
+                </div>
+                <div class="modal-footer" style={"display:block;"}>
+                    <div class="row">
+                        <div class="col-sm-2" >
+                            <label>Total</label>
+                            <input type="text" class="newchallan-totalprice changinput" value={{"₹ 0.00"}} id="nc-totalprice" disabled/>
+                        </div>
+                        <div class="col-sm-2" >
+                            <label>Advance</label>
+                            <input type="number" class="newchallan-advanceprice changinput" value="0" min="1" onchange={{"newchallanadvance()"}} id="nc-advanceprice" required="true"/>
+                        </div>
+                        <div class="col-sm-2" id="nc-netprice">
+                            <label>Net Amount</label>
+                            <input type="text" class="newchallan-netprice changinput" value={{"₹ 0.00"}} id="nc-netprice" disabled/>
+                        </div>
+                        <div class="col-sm-1" id="nc-paidby">
+                            <label style={{"white-space:nowrap;"}}>Paid By</label>
+                            <select class="changinput" id="nc-paidby">
+                                    <option selected="">Choose..</option>
+                                    <option value="Paytm">Paytm</option>
+                                    <option value="Cash">Cash</option>
+                                    <option value="Phonepe">Phonepe</option>
+                                    {% comment %} <option value="Delivered">Delivered</option>
+                                    <option value="Assigned">Assigned</option> {% endcomment %}
+                                </select>
+                        </div>
+                        <div class="col-md-5 col-sm-12" style={{"text-align:right;"}}>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" id="nc-closebutton">Close</button>
+                            <button type="submit" class="btn btn-primary btn-color" id="nc-submitbutton">Submit</button>
+                            <button type="button" class="btn btn-primary btn-color" data-toggle="modal" data-target="#view-invoice" id="nc-printbutton">Print</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% comment %} New Job {% endcomment %}
+{% if jobsheet == "jobsheet"%}
+<div class="modal fade bs-example-modal-lg" id="new-job" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="text-align:left;">
+            <form id="addnewjob" method="POST" >
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myLargeModalLabel">New Job</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+                <div class="modal-body">
+                    <!-- <form> -->
+                    <div class="newchallan_input_fields_wrap">
+                        <div class="row">
+                            <div class="col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Job No. <strong>MG{{Challans.last.Challan_no|add:'1'}}</strong </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group" >
+                                    <label>Company Name</label>
+                                    <input class="form-control" type="text" placeholder="Company Name" id="nc-companyname">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 col-sm-12">
+                                <div class="form-group" >
+                                    <label>Contact Person</label>
+                                    <input class="form-control" type="text" placeholder="Contact Person" id="nc-contactperson">
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Mobile No.</label>
+                                    <input class="form-control" pattern="[6-9]{1}[0-9]{9}" required="true" type="tel" id="nc-mobno">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            {% comment %} <div class="col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Remark</label>
+                                    <input class="form-control" required="true" type="text" id="nc-remark">
+                                </div>
+                            </div> {% endcomment %}
+                            <div class="col-md-6 col-sm-12">
+                                <div class="form-group" >
+                                    <label>Designer</label>
+                                    <select class="custom-select" id="nc-designer" required="true">
+                                        <option selected="">Choose...</option>
+                                        {% for designer in Designer%}
+                                        <option value={{designer.Designer_name}}>{{designer.Designer_name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-sm-12">
+                                <div class="form-group" >
+                                    <label>Status</label>
+                                    <select class="custom-select" id="nc-status" required="true">
+                                        <option selected="">Choose...</option>
+                                        <option value="Ready">Ready</option>
+                                        <option value="Waiting">Waiting</option>
+                                        <option value="Pending">Pending</option>
+                                        <option value="Delivered">Delivered</option>
+                                        <option value="Assigned">Assigned</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <button style={"background-color:green;"} class="newchallan_add_field_button btn btn-info active">Add Particulars</button>
+                        </div>
+                    </div>
+                    <!-- </form> -->
+                </div>
+                <div class="modal-footer" style={"display:block;"}>
+                    <div class="row">
+                        <div class="col-sm-2" >
+                            <label>Total</label>
+                            <input type="text" class="newchallan-totalprice changinput" value={{"₹ 0.00"}} id="nc-totalprice" disabled/>
+                        </div>
+                        <div class="col-sm-2" >
+                            <label>Advance</label>
+                            <input type="number" class="newchallan-advanceprice changinput" value="0" min="1" onchange={{"newchallanadvance()"}} id="nc-advanceprice" required="true"/>
+                        </div>
+                        <div class="col-sm-2" id="nc-netprice">
+                            <label>Net Amount</label>
+                            <input type="text" class="newchallan-netprice changinput" value={{"₹ 0.00"}} id="nc-netprice" disabled/>
+                        </div>
+                        <div class="col-sm-1" id="nc-paidby">
+                            <label style={{"white-space:nowrap;"}}>Paid By</label>
+                            <select class="changinput" id="nc-paidby">
+                                    <option selected="">Choose..</option>
+                                    <option value="Paytm">Paytm</option>
+                                    <option value="Cash">Cash</option>
+                                    <option value="Phonepe">Phonepe</option>
+                                    {% comment %} <option value="Delivered">Delivered</option>
+                                    <option value="Assigned">Assigned</option> {% endcomment %}
+                                </select>
+                        </div>
+                        <div class="col-md-5 col-sm-12" style={{"text-align:right;"}}>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" id="nc-closebutton">Close</button>
+                            <button type="submit" class="btn btn-primary btn-color" id="nc-submitbutton">Submit</button>
+                            <button type="button" class="btn btn-primary btn-color" data-toggle="modal" data-target="#view-invoice" id="nc-printbutton">Print</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{%endif%}
+{% comment %} {% if product == "product"%} {% endcomment %}
+<div class="modal fade bs-example-modal-lg" id="new-product" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="text-align:left;">
+            <form id="addnewprod" method="POST" >
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myLargeModalLabel">New Product</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+                <div class="modal-body job-product">
+                    <!-- <form> -->
+                    <div class="newchallan_input_fields_wrap">
+                        <div class="job-cust">
+                            <div class="row">
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group">
+                                        <label>Product No. <strong>MG{{Challans.last.Challan_no|add:'1'}}</strong></label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group">
+                                        <h5 class="text-success" id="cust-exist"><strong>*** Customer Exist</strong></h5>
+                                        <h5 class="text-danger cust-noexist"><strong>*** Customer Not Exist</strong></h5>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group">
+                                        <a class="btn btn-primary cust-noexist btn-color" href="#" role="button" data-toggle="modal" data-target="#new-customer" >
+                                                Add New Customer
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 col-sm-12">
+                                    <label>Customer Code</label>
+                                    <input type="number" class="form-control" type="text" placeholder="Customer Code or Mobile" id="np-custcode" onchange={{"custchange()"}} onkeypress={{"return isNumberKey(event)"}} />
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <label>Customer Name</label>
+                                    <input class="form-control" type="text" placeholder="Customer Name" id="np-custname" disabled/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="job-product">
+                        <div id="myproducts">
+                            <div class="row">
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group" >
+                                        <label>Job Name</label>
+                                        {% comment %} <input class="form-control" type="text" placeholder="Company Name" id="nc-companyname"> {% endcomment %}
+                                        <select class="custom-select" id="np-custjobname" onchange={{"jobchange()"}}>
+                                            <option selected="">Choose...</option>
+                                            <option value="brochure">Brochure</option>
+                                            <option value="vcard">Business Card</option>
+                                            <option value="Calendar">Calendar</option>
+                                            <option value="flyers">Flyers</option>
+                                            <option value="pamphlet">Pamphlet</option>
+                                            <option value="other">other</option>
+                                        </select>                                      
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group" >
+                                        <label>Desiging Status</label>
+                                        <select class="custom-select" id="np-custdesigner" name="np-custdesigner">
+                                            <option selected="">Choose...</option>
+                                            <option value="Abhay Namdev">Abhay Namdev</option>
+                                            <option value="Ayan Khan">Ayan Khan</option>
+                                            <option value="Mohan Dantole">Mohan Dantole</option>
+                                            <option value="Naveen Vishwakarma">Naveen Vishwakarma</option>
+                                            <option value="Shruti Soni">Shruti Soni</option>
+                                            <option value="Pending">Pending</option>
+                                        </select>                                      
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group" >
+                                        <label>Size</label>
+                                        <select class="custom-select" id="np-custsize" >
+                                            <option selected="">Choose...</option>
+                                            <option value="5.5*8.5" id="size1">5.5"*8.5"</option>
+                                            <option value="8.5*11" id="size2">8.5"*11"</option>
+                                            <option value="11*17" id="size3">11"*17"</option>
+                                            <option value="12*18" id="size4" >12"*18"</option>
+                                            <option value="13*19" id="size5">13"*19"</option>
+                                            <option value="15*20" id="size6">15"*20"</option>
+                                            <option value="17*22" id="size7">17"*22"</option>
+                                            <option value="20*30" id="size8">20"*30"</option>
+                                            <option value="23*36" id="size9">23"*36"</option>
+                                            <option value="other" id="size10">other</option>
+                                        </select>  
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group">
+                                        <label>Quantity</label>
+                                        <input class="form-control" type="number" id="np-custqty" onchange={{"productratechng()"}} required/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group" >
+                                        <label>Print Sides</label>
+                                        <select class="custom-select" id="np-custpside" >
+                                            <option selected="">Choose...</option>
+                                            <option value="single">Single</option>
+                                            <option value="both">Both</option>
+                                        </select> 
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group" >
+                                        <label>Print Color</label>
+                                        <select class="custom-select" id="np-custprcolor" >
+                                            <option selected="">Choose...</option>
+                                            <option value="single">Single</option>
+                                            <option value="two">Two</option>
+                                            <option value="three">Three</option>
+                                            <option value="multi">Multi</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group" >
+                                        <label>Paper Name</label>
+                                        <select class="custom-select" id="np-custpname" >
+                                            <option selected="">Choose...</option>
+                                            <option value="art">Art</option>
+                                            <option value="maplithio">Maplithio</option>
+                                        </select> 
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group" >
+                                        <label>Paper GSM</label>
+                                        <select class="custom-select" id="np-custpgsm" >
+                                            <option selected="">Choose...</option>
+                                            <option value="60">60</option>
+                                            <option value="70">70</option>
+                                            <option value="80">80</option>
+                                            <option value="90">90</option>
+                                            <option value="120">120</option>
+                                            <option value="130">130</option>
+                                            <option value="100">100</option>
+                                            <option value="170">170</option>
+                                            <option value="300">300</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group" >
+                                        <label>Paper color</label>
+                                        <select class="custom-select" id="np-custpcolor" >
+                                            <option selected="">Choose...</option>
+                                            <option value="white">White</option>
+                                            <option value="yellow">Yellow</option>
+                                            <option value="pink">Pink</option>
+                                            <option value="light">Light</option>
+                                            <option value="blue">Blue</option>
+                                        </select> 
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group" >
+                                        <label>Lamination</label>
+                                        <select class="custom-select" id="np-custlamination" >
+                                            <option selected="">Choose...</option>
+                                            <option value="na">NA</option>
+                                            <option value="glossy">Glossy</option>
+                                            <option value="matt">Matt</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group" >
+                                        <label>Folding</label>
+                                        <select class="custom-select" id="np-custfolding" >
+                                            <option selected="">Choose...</option>
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                        </select> 
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group" >
+                                        <label>Perforated</label>
+                                        <select class="custom-select" id="np-custperforated" >
+                                            <option selected="">Choose...</option>
+                                            <option value="yes">Yes</option>
+                                            <option value="no">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group" >
+                                        <label>Rate</label>
+                                        <input class="form-control" type="number" id="np-custrate" onchange={{"productratechng()"}} required/>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group" >
+                                        <label>Amount</label>
+                                        <input class="form-control" type="number" id="np-custamount" disabled/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    <div id="myproducts1">
+                        <div>
+                            <a style={{"background-color:#702020;"}} class="newproducts btn btn-info active btn-color" onclick={{"addnewproduct()"}}>Add More</a>
+                        </div>
+                    </div>
+                    {% comment %} <div>
+                        <label for="myfile">Select files:</label>
+                        <input type="file" id="myfile" name="myfile" multiple>
+                    </div> {% endcomment %}
+                    {% comment %} <div class="row">
+                        <div class="col-sm-4" >
+                            <label>Total</label>
+                            <input type="text" class="newchallan-totalprice changinput" value={{"₹ 0.00"}} id="nc-totalprice" disabled/>
+                        </div>
+                        <div class="col-sm-4" >
+                            <label>Advance</label>
+                            <input type="number" class="newchallan-advanceprice changinput" value="0" min="1" onchange={{"newchallanadvance()"}} id="nc-advanceprice" />
+                        </div>
+                        <div class="col-sm-4" id="nc-netprice">
+                            <label>Net Amount</label>
+                            <input type="text" class="newchallan-netprice changinput" value={{"₹ 0.00"}} id="nc-netprice" disabled/>
+                        </div>
+                    </div> {% endcomment %}
+                    <!-- </form> -->
+                </div>
+                <div class="modal-footer" style={"display:block;"} id="myproducts2">
+                    <div class="row">
+                        {% comment %} <div class="col-sm-1" id="nc-paidby">
+                            <label style={{"white-space:nowrap;"}}>Paid By</label>
+                            <select class="changinput" id="nc-paidby">
+                                    <option selected="">Choose..</option>
+                                    <option value="Paytm">Paytm</option>
+                                    <option value="Cash">Cash</option>
+                                    <option value="Phonepe">Phonepe</option>
+                                </select>
+                        </div> {% endcomment %}
+                        <div  style={{"text-align:right;"}}>
+                            {% comment %} <button type="submit" class="btn btn-secondary"  id="nc-closebutton">Pending</button> {% endcomment %}
+                            <button type="submit" value="Submit" class="btn btn-primary btn-color" id="nc-submitbutton">Alott to</button>
+                            {% comment %} <button type="submit" class="btn btn-primary btn-color" data-toggle="modal" data-target="#view-invoice" id="nc-printbutton">Quotation</button> {% endcomment %}
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% comment %} {%endif%} {% endcomment %}
+<div class="modal fade bs-example-modal-lg" id="new-customer" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="text-align:left;">
+            <form id="addnewcustomer" method="POST" >
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myLargeModalLabel">New Customer</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+                <div class="modal-body">
+                    <!-- <form> -->
+                    <div class="newchallan_input_fields_wrap">
+                        <div class="row ">
+                            <div class="col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Customer No. <strong>MG{{Challans.last.Challan_no|add:'1'}}</strong </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="mycustomer">
+                            <div class="row">
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group" >
+                                        <label>Company Name </label>
+                                        <input class="form-control" type="text" placeholder="Company Name" id="nc-companyname">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group" >
+                                        <label>Contact Person</label>
+                                        <input class="form-control" type="text" placeholder="Contact Person" id="nc-contactperson">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group">
+                                        <label>Mobile No.</label>
+                                        <input class="form-control" pattern="[6-9]{1}[0-9]{9}" required="true" type="tel" id="nc-mobcust">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group" >
+                                        <label>Email-Id</label>
+                                        <input class="form-control" type="email" id="nc-email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>Address</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 col-sm-12">
+                                    <div class="form-group" >
+                                        <label>Area</label>
+                                        <input class="form-control" type="text" placeholder="Area/town" id="nc-area">
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-12">
+                                    <div class="form-group" >
+                                        <label>City</label>
+                                        <input class="form-control" type="text" placeholder="City" id="nc-city">
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-12">
+                                    <div class="form-group" >
+                                        <label>State</label>
+                                        <input class="form-control" type="text" placeholder="State" id="nc-state">
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-12">
+                                    <div class="form-group" >
+                                        <label>Pincode</label>
+                                        <input class="form-control" type="text" placeholder="Pincode" id="nc-pincode">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group" >
+                                        <label>GSTIN No.</label>
+                                        <input class="form-control" type="text" placeholder="GSTIN" id="nc-gstin">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group" >
+                                        <label>Reference/Source</label>
+                                        <input class="form-control" type="text" placeholder="Reference Person" id="nc-refx">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group" >
+                                        <label>Description</label>
+                                        <input class="form-control" type="text" placeholder="Description" id="nc-description">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- </form> -->
+                </div>
+                <div class="modal-footer" style={"display:block;"}>
+                    <div class="row">
+                        <div class="col-md-12" style={{"text-align:right;"}}>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" id="nc-closebutton">Close</button>
+                            <button type="button" class="btn btn-primary btn-color" onclick={{"savedetails()"}}>Save Details</button>
+                            <button type="button" class="btn btn-primary btn-color" data-toggle="modal" data-target="#view-invoice" id="nc-printbutton">Print</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bs-example-modal-lg" id="new-member" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="text-align:left;">
+            <form id="addnewmember" method="POST" >
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myLargeModalLabel">New Member</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+                <div class="modal-body">
+                    <!-- <form> -->
+                    <div class="newchallan_input_fields_wrap">
+                        <div class="row">
+                            <div class="col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Member No. <strong>MG{{Challans.last.Challan_no|add:'1'}}</strong></label>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="mycustomer">
+                            <div class="row">
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group" >
+                                        <label>Member Name </label>
+                                        <input class="form-control" type="text" placeholder="Member Name" id="nm-membername">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group" >
+                                        <label>Designation</label>
+                                        <input class="form-control" type="text" placeholder="Designation" id="nm-designation">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group">
+                                        <label>Mobile No.</label>
+                                        <input class="form-control" pattern="[6-9]{1}[0-9]{9}" required="true" type="tel" id="nm-mobno" required/>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group" >
+                                        <label>Email-Id</label>
+                                        <input class="form-control" type="email" id="nm-email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" required/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>Address</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 col-sm-12">
+                                    <div class="form-group" >
+                                        <label>Area</label>
+                                        <input class="form-control" type="text" placeholder="Area/town" id="nm-area">
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-12">
+                                    <div class="form-group" >
+                                        <label>City</label>
+                                        <input class="form-control" type="text" placeholder="City" id="nm-city">
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-12">
+                                    <div class="form-group" >
+                                        <label>State</label>
+                                        <input class="form-control" type="text" placeholder="State" id="nm-state">
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-12">
+                                    <div class="form-group" >
+                                        <label>Pincode</label>
+                                        <input class="form-control" type="text" placeholder="Pincode" id="nm-pincode">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group" >
+                                        <label>Department</label>
+                                        <input class="form-control" type="text" placeholder="Department" id="nm-department">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group" >
+                                        <label>MemberId</label>
+                                        <input class="form-control" type="text" placeholder="memberid" id="nm-memberid">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group" >
+                                        <label>Username</label>
+                                        <input class="form-control" type="text" placeholder="Username" id="nm-username">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group" >
+                                        <label>Passcode</label>
+                                        <input class="form-control" type="text" placeholder="Passcode" id="nm-passcode">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- </form> -->
+                </div>
+                <div class="modal-footer" style={"display:block;"}>
+                    <div class="row">
+                        {% comment %} <div class="col-sm-1" id="nc-paidby">
+                            <label style={{"white-space:nowrap;"}}>Paid By</label>
+                            <select class="changinput" id="nc-paidby">
+                                    <option selected="">Choose..</option>
+                                    <option value="Paytm">Paytm</option>
+                                    <option value="Cash">Cash</option>
+                                    <option value="Phonepe">Phonepe</option>
+                                </select>
+                        </div> {% endcomment %}
+                        <div  style={{"text-align:right;"}}>
+                            {% comment %} <button type="button" class="btn btn-secondary" data-dismiss="modal" id="nc-closebutton">Pending</button> {% endcomment %}
+                            <button type="submit" class="btn btn-primary btn-color" id="nc-submitbutton">Save</button>
+                            {% comment %} <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#view-invoice" id="nc-printbutton">Quotation</button> {% endcomment %}
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bs-example-modal-lg" id="allotjob" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="text-align:left;">
+            <form id="addnewprod" method="POST" >
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myLargeModalLabel">Allot Project to Designer</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+                <div class="modal-body job-product">
+                    <!-- <form> -->
+                    <div class="newchallan_input_fields_wrap">
+                        <div class="job-cust">
+                            <div class="row">
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group">
+                                        <label>Product No. <strong>MG{{Challans.last.Challan_no|add:'1'}}</strong></label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 col-sm-12">
+                                    <label>Customer Code</label>
+                                    <input type="number" class="form-control" type="text" placeholder="Customer Code or Mobile" id="na-custcode" disabled/>
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <label>Customer Name</label>
+                                    <input class="form-control" type="text" placeholder="Customer Name" id="na-custname" disabled/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="job-product">
+                        <div id="myproducts">
+                            <div class="row">
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group" >
+                                        <label>Job Name</label>
+                                        <input class="form-control" type="text" placeholder="Customer Name" id="na-jobname" disabled/> 
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group">
+                                        <label>Alot Designer</label>
+                                        <select class="custom-select" id="na-designer" required="true">
+                                            <option selected="">Choose...</option>
+                                            <option value="Abhay_Namdev" id="size1">Abhay Namdev</option>
+                                            <option value="Naveen_Vishwakarma" id="size2">Naveen Vishwakarma</option>
+                                            <option value="Amir Khan" id="size3">Amir Khan</option>
+                                            <option value="Ayan Khan" id="size4" >Ayan Khan</option>
+                                        </select> 
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style={"display:block;"} id="myproducts2">
+                    <div class="row">
+                        <div  style={{"text-align:right;"}}>
+                            <button type="submit" value="Submit" class="btn btn-primary btn-color" id="nc-submitbutton">Alott</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
