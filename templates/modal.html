@@ -1,0 +1,271 @@
+{% load static%}
+<!-- Invoice Modal -->
+<div class="modal fade bs-example-modal-lg" id="view-invoice{{challans.Challan_no}}" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style={{"width:fit-content;"}}>
+            <div class="modal-header">
+                <h4 class="modal-title" id="myLargeModalLabel">Challan</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body" >
+                <div class="invoice-wrap">
+                    <div class="invoice-box" id="challan-body{{challans.Challan_no}}">
+                        <div class="invoice-header">
+                            <div class="logo text-center">
+                                <img src={% static 'vendors/images/deskapp-logo.svg' %} alt="">
+                            </div>
+                        </div>
+                        <h4 class="text-center mb-30 weight-600">Challan</h4>
+                        <div class="row pb-30">
+                            <div class="col-md-6 text-lefts">
+                                <h5 class="mb-15">{{challans.Contact_Person}}</h5>
+                                <p class="font-14 mb-5">Date Issued: <strong class="weight-600">{{challans.StartDate}}</strong></p>
+                                <p class="font-14 mb-5">Challan No: <strong class="weight-600">MG{{challans.Challan_no}}</strong></p>
+                                <p class="font-14 mb-5">Mobile No: <strong class="weight-600">{{challans.Mobile_no}}</strong></p>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="text-right">
+                                    <h5 class="mb-15">Mahak Graphics
+                                    </h5>
+                                    <p class="font-14 mb-5"><strong class="weight-600">Press Complex</strong></p>
+                                    <p class="font-14 mb-5"><strong class="weight-600">Bhopal</strong></p>
+                                    <p class="font-14 mb-5"><strong class="weight-600">462026</strong></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="invoice-desc pb-30">
+                            <div class="invoice-desc-head clearfix">
+                                <div class="invoice-par">Particulars</div>
+                                <div class="invoice-size">Size</div>
+                                <div class="invoice-qty">Qty</div>
+                                <div class="invoice-rat">Rate</div>
+                                <div class="invoice-amount">Amount</div>
+                            </div>
+                            <div class="invoice-desc-body">
+                                <ul>
+                                    {% for particulars in Particulars%}
+                                    {% if challans.Challan_no == particulars.Challan_no_part_id %}
+                                    <li class="clearfix">
+                                        <div class="invoice-par">{{particulars.Particular_Name}}</div>
+                                        <div class="invoice-size">{{particulars.Size}}</div>
+                                        <div class="invoice-qty">{{particulars.Quantity}}</div>
+                                        <div class="invoice-rat">{{particulars.Rate}}</div>
+                                        <div class="invoice-amount"><span class="weight-600">₹ {{particulars.Amount}}</span></div>
+                                    </li>
+                                    {% endif %}
+                                    {% endfor%} 
+                                </ul>
+                            </div>
+                            <div class="invoice-desc-footer">
+                                <div class="invoice-desc-head clearfix">
+                                    <div class="invoice-info">Bank Info</div>
+                                    <div class="invoice-due">Due By</div>
+                                    <div class="invoice-advance">Advance</div>
+                                    <div class="invoice-subtotal">Total Due</div>
+                                </div>
+                                <div class="invoice-desc-body">
+                                    <ul>
+                                        {% for prices in Prices%}
+                                        {% if challans.Challan_no == prices.Challan_no_part_id %}
+                                        <li class="clearfix">
+                                            <div class="invoice-info">
+                                                <p class="font-14 mb-5">Account No: <strong class="weight-600">123 456 789</strong></p>
+                                                <p class="font-14 mb-5">Code: <strong class="weight-600">4556</strong></p>
+                                            </div>
+                                            <div class="invoice-due font-20 weight-500" id="due-date"></div>
+                                            <div class="invoice-advance"><span class="weight-600 font-24">₹{{prices.Advance_Price}}</span></div>
+                                            <div class="invoice-subtotal"><span class="weight-600 font-24 text-danger">₹{{prices.Net_Price}}</span></div>
+                                        </li>
+                                        {% endif %}
+                                        {% endfor%} 
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <h4 class="text-center pb-20">Thank You!!</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <!-- <button type="button" class="btn btn-primary btn-color">Save changes</button> -->
+                <button type="button" class="btn btn-primary btn-color" onclick="printDiv('challan-body{{challans.Challan_no}}')">Print this page</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% comment %} Edit Challan Modal {% endcomment %}
+<div class="modal fade bs-example-modal-lg" id="edit-challan{{challans.Challan_no}}" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="text-align:left;">
+             
+            <form id="updatechallan{{challans.Challan_no}}" method="POST" >
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myLargeModalLabel">Edit Challan</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+                <div class="modal-body">
+                    <!-- <form> -->
+                    <div class="input_fields_wrap{{challans.Challan_no}}">
+                        <div class="row">
+                            <div class="col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Challan No. {{challans.Challan_no}}</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Company Name</label>
+                                    <input class="form-control" type="text" placeholder="Company Name"
+                                    value="{{challans.Company_Name}}"
+                                    id="uc-companyname">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Contact Person</label>
+                                    <input class="form-control" type="text" placeholder="Contact Person"
+                                    value="{{challans.Contact_Person}}"
+                                    id="uc-contactperson">
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Mobile No.</label>
+                                    <input class="form-control" pattern="[6-9]{1}[0-9]{9}" required="true" type="tel"
+                                    value="{{challans.Mobile_no}}"
+                                    id="uc-mobno">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Remark</label>
+                                    <input class="form-control" required="true" type="text" id="uc-remark" value="{{challans.Remark}}">
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Status</label>
+                                    <select class="custom-select" id="uc-status">
+                                        <option selected="">{{challans.Status}}</option>
+                                        <option value="Ready">Ready</option>
+                                        <option value="Waiting">Waiting</option>
+                                        <option value="Pending">Pending</option>
+                                        <option value="Delivered">Delivered</option>
+                                        <option value="Assigned">Assigned</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <button type="button" style={"background-color:green;"} class="btn btn-info active " onclick="editchallan_parts('{{Particulars.last.id}}',{{challans.Challan_no}})">Add Particulars</button>
+                        </div>
+                        {% for particulars in Particulars%}
+                        {% if challans.Challan_no == particulars.Challan_no_part_id %}
+                        <div class="row editparts{{particulars.id}}">
+                            <div class="col-md-3 col-sm-12">
+                                <div class="form-group">
+                                    <label>Particulars</label>
+                                    <input type="text" class="form-control"
+                                    value="{{particulars.Particular_Name}}" id="uc-particulars-desc"></div>
+                            </div>
+                            <div class="col-md-2 col-sm-12">
+                                <div class="form-group">
+                                    <label>Size</label>
+                                    <input type="text" class="form-control"
+                                    value="{{particulars.Size}}" id="uc-size-desc"></div>
+                            </div>
+                            <div class="col-md-2 col-sm-12">
+                                <div class="form-group">
+                                    <label>Quantity</label>
+                                    <input type="text" class="form-control qty{{particulars.id}}"
+                                    value="{{particulars.Quantity}}" onchange="raqchange('{{particulars.id}}','{{challans.Challan_no}}')"  id="uc-qty-desc" value="0"></div>
+                            </div>
+                            <div class="col-md-2 col-sm-12">
+                                <div class="form-group">
+                                    <label>Rate</label>
+                                    <input type="text" class="form-control rate{{particulars.id}}"
+                                    value="{{particulars.Rate}}" onchange="raqchange('{{particulars.id}}','{{challans.Challan_no}}')" id="uc-rate-desc" value="0"></div>
+                            </div>
+                            <div class="col-md-2 col-sm-12">
+                                <div class="form-group">
+                                    <label>Amount</label>
+                                    <input type="number" class="form-control formss amount part{{particulars.id}} challan{{challans.Challan_no}}" onchange="amountchange('{{particulars.id}}','{{challans.Challan_no}}')"
+                                    value="{{particulars.Amount}}" id="uc-amount-desc" disabled/></div>
+                            </div>
+                            <div class="col-md-1 col-sm-12">
+                                <button type="button" class="remove_field{{challans.Challan_no}} btn btn-info" style={{"cursor:pointer;background-color:red;margin-top:30px;"}} onclick="editremove('{{particulars.id}}','{{challans.Challan_no}}')">X</button>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% endfor%} 
+                    </div>
+
+                    <!-- </form> -->
+                </div>
+                <div class="modal-footer" style={{"display:block;"}}>
+                    {% for prices in Prices%}
+                    {% if challans.Challan_no == prices.Challan_no_part_id %}
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <label>Total</label>
+                            <input type="text" class="totalprice{{prices.Challan_no_part_id}} changinput" value="₹ {{prices.Total_Price}}" id="uc-totalprice" disabled/>
+                        </div>
+                        <div class="col-sm-2">
+                            <label>Advance</label>
+                            <input type="number" class="advanceprice{{prices.Challan_no_part_id}} changinput" value="{{prices.Advance_Price}}" onchange="changeadvance('{{prices.Challan_no_part_id}}')" id="uc-advanceprice" />
+                        </div>
+                        <div class="col-sm-2">
+                            <label>Net Amount</label>
+                            <input type="text" class="netprice{{prices.Challan_no_part_id}} changinput" value="₹ {{prices.Net_Price}}" id="uc-netprice" disabled/>
+                        </div>
+                        <div class="col-sm-1">
+                            <label style={{"white-space:nowrap;"}}>Paid By</label>
+                            <select class="changinput" id="uc-paidby">
+                                    <option selected="">{{prices.Paid_by}}</option>
+                                    <option value="Paytm">Paytm</option>
+                                    <option value="Cash">Cash</option>
+                                    <option value="Phonepe">Phonepe</option>
+                                </select>
+                        </div>
+                        <div class="col-md-5 col-sm-12" style={{"text-align:right;"}}>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary btn-color" data="updatechallan{{challans.Challan_no}}">Submit</button>
+                            {% comment %} onclick=udpdatechallan({{challans.Challan_no}}) {% endcomment %}
+                            {% comment %} <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#view-invoice{{challans.Challan_no}}" >Print</button> {% endcomment %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor%}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% comment %} Delete Modal {% endcomment %}
+<div class="modal fade" id="delete-challan{{challans.Challan_no}}" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-body text-center font-18">
+                <h4 class="padding-top-30 mb-30 weight-500">Are you sure you want to delete?</h4>
+                <div class="padding-bottom-30 row" style="max-width: 170px; margin: 0 auto;">
+                    <div class="col-6">
+                        <button type="button" class="btn btn-secondary border-radius-100 btn-block confirmation-btn" data-dismiss="modal"><i class="fa fa-times"></i></button>
+                        NO
+                    </div>
+                    <div class="col-6">
+                        <button type="button" class="btn btn-primary border-radius-100 btn-block confirmation-btn" id="deletechallan{{challans.Challan_no}}"><i class="fa fa-check"></i></button>
+                        YES
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

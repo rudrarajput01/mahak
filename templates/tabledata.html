@@ -1,0 +1,456 @@
+{% load static%}
+<table class="data-table table stripe hover nowrap display" id="example">
+    {% if table == "challan"%}
+    <thead>
+        <tr>
+            <th>C.No.</th>
+            <th>Company Name</th>
+            <th>Contact Person</th>
+            <th>Mobile No.</th>
+            <th>Start Date</th>
+            <th>Status</th>
+            <th>Remark</th>
+            <th class="datatable-nosort">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for challans in Challans%}
+        <tr>
+            <td>{{challans.Challan_no}}</td>
+            <td>{{challans.Company_Name}}</td>
+            <td>{{challans.Contact_Person}}</td>
+            <td>{{challans.Mobile_no}}</td>
+            <td>{{challans.StartDate}}</td>
+            <td>{{challans.Status}}</td>
+            <td>{{challans.Remark}}</td>
+            <td>
+                <div class="dropdown">
+                    <a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle" href="#" role="button" data-toggle="dropdown">
+                        <i class="dw dw-more"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
+                        <a class="dropdown-item" href="#" class="btn-block" data-toggle="modal" data-target="#view-invoice{{challans.Challan_no}}"><i class="dw dw-eye"></i> View</a>
+                        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#edit-challan{{challans.Challan_no}}"><i class="dw dw-edit2"></i> Edit</a>
+                        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#delete-challan{{challans.Challan_no}}"><i class="dw dw-delete-3"></i> Delete</a>
+                    </div>
+                    <!-- Invoice Modal -->
+                    {% comment %} <div class="modal fade bs-example-modal-lg" id="view-invoice{{challans.Challan_no}}" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-centered">
+                            <div class="modal-content" style={{"width:fit-content;"}}>
+                                <div class="modal-header">
+                                    <h4 class="modal-title" id="myLargeModalLabel">Challan</h4>
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                </div>
+                                <div class="modal-body" id="challan-body{{challans.Challan_no}}">
+                                    <div class="invoice-wrap">
+                                        <div class="invoice-box">
+                                            <div class="invoice-header">
+                                                <div class="logo text-center">
+                                                    <img src={% static 'vendors/images/deskapp-logo.svg' %} alt="">
+                                                </div>
+                                            </div>
+                                            <h4 class="text-center mb-30 weight-600">Challan</h4>
+                                            <div class="row pb-30">
+                                                <div class="col-md-6">
+                                                    <h5 class="mb-15">{{challans.Contact_Person}}</h5>
+                                                    <p class="font-14 mb-5">Date Issued: <strong class="weight-600">{{challans.StartDate}}</strong></p>
+                                                    <p class="font-14 mb-5">Challan No: <strong class="weight-600">MG{{challans.Challan_no}}</strong></p>
+                                                    <p class="font-14 mb-5">Mobile No: <strong class="weight-600">{{challans.Mobile_no}}</strong></p>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="text-right">
+                                                        <p class="font-14 mb-5">Mahak Graphics</strong>
+                                                        </p>
+                                                        <p class="font-14 mb-5">Press Complex</p>
+                                                        <p class="font-14 mb-5">Bhopal</p>
+                                                        <p class="font-14 mb-5">462026</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="invoice-desc pb-30">
+                                                <div class="invoice-desc-head clearfix">
+                                                    <div class="invoice-par">Particulars</div>
+                                                    <div class="invoice-size">Size</div>
+                                                    <div class="invoice-qty">Qty</div>
+                                                    <div class="invoice-rat">Rate</div>
+                                                    <div class="invoice-amount">Amount</div>
+                                                </div>
+                                                <div class="invoice-desc-body">
+                                                    <ul>
+                                                        {% for particulars in Particulars%}
+                                                        {% if challans.Challan_no == particulars.Challan_no_part_id %}
+                                                        <li class="clearfix">
+                                                            <div class="invoice-par">{{particulars.Particular_Name}}</div>
+                                                            <div class="invoice-size">{{particulars.Size}}</div>
+                                                            <div class="invoice-qty">{{particulars.Quantity}}</div>
+                                                            <div class="invoice-rat">{{particulars.Rate}}</div>
+                                                            <div class="invoice-amount"><span class="weight-600">₹ {{particulars.Amount}}</span></div>
+                                                        </li>
+                                                        {% endif %}
+                                                        {% endfor%} 
+                                                    </ul>
+                                                </div>
+                                                <div class="invoice-desc-footer">
+                                                    <div class="invoice-desc-head clearfix">
+                                                        <div class="invoice-sub">Bank Info</div>
+                                                        <div class="invoice-rate">Due By</div>
+                                                        <div class="invoice-subtotal">Total Due</div>
+                                                    </div>
+                                                    <div class="invoice-desc-body">
+                                                        <ul>
+                                                            {% for prices in Prices%}
+                                                            {% if challans.Challan_no == prices.Challan_no_part_id %}
+                                                            <li class="clearfix">
+                                                                <div class="invoice-sub">
+                                                                    <p class="font-14 mb-5">Account No: <strong class="weight-600">123 456 789</strong></p>
+                                                                    <p class="font-14 mb-5">Code: <strong class="weight-600">4556</strong></p>
+                                                                </div>
+                                                                <div class="invoice-rate font-20 weight-600" id="due-date"></div>
+                                                                <div class="invoice-subtotal"><span class="weight-600 font-24 text-danger">₹ {{prices.Net_Price}}</span></div>
+                                                            </li>
+                                                            {% endif %}
+                                                            {% endfor%} 
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <h4 class="text-center pb-20">Thank You!!</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+                                    <button type="button" class="btn btn-primary" onclick="printDiv('challan-body{{challans.Challan_no}}')">Print this page</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div> {% endcomment %}
+                    {% include "modal.html" with Challans=Challans %}
+                    
+                   
+                </div>
+            </td>
+        </tr>
+        {% endfor%}
+    </tbody>
+    {%endif%}
+    {% if table == "customer"%}
+    <thead>
+        <tr>
+            <th>Company Name</th>
+            <th>Contact Person</th>
+            <th>Mobile No.</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for customer in Customers%}
+        <tr>
+            <td>{{customer.Company_Name}}</td>
+            <td>{{customer.Contact_Person}}</td>
+            <td>{{customer.Mobile_no}}</td>
+            <td>
+                <div>
+                    <a class="btn btn-primary btn-color" href="#" role="button" data-toggle="modal" data-target="#jobthroughcut{{customer.Mobile_no}}">
+                        Add New Job
+                    </a>
+                </div>
+                <div class="modal fade bs-example-modal-lg" id="jobthroughcut{{customer.Mobile_no}}" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-centered">
+                            <div class="modal-content" style="text-align:left;">
+                                <form id="oldcustprod{{customer.Mobile_no}}" method="POST">
+                                    {% csrf_token %}
+                                    <div class="modal-header">
+                                        <h4 class="modal-title" id="myLargeModalLabel">New Product</h4>
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                    </div>
+                                    <div class="modal-body job-product">
+                                        <!-- <form> -->
+                                        <div class="newchallan_input_fields_wrap">
+                                            <div class="job-cust">
+                                                <div class="row">
+                                                    <div class="col-md-6 col-sm-12">
+                                                        <div class="form-group">
+                                                            <label>Product No. <strong>MG{{Challans.last.Challan_no|add:'1'}}</strong></label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6 col-sm-12">
+                                                        <label>Customer Code</label>
+                                                        <input type="number" class="form-control" type="text" placeholder="Customer Code or Mobile" id="np-custcode{{customer.Mobile_no}}" value="{{customer.Mobile_no}}" disabled/>
+                                                    </div>
+                                                    <div class="col-md-6 col-sm-12">
+                                                        <label>Customer Name</label>
+                                                        <input class="form-control" type="text" placeholder="Customer Name" id="np-custname{{customer.Mobile_no}}" value="{{customer.Contact_Person}}" disabled/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="job-product">
+                                            <div id="myproducts">
+                                                <div class="row">
+                                                    <div class="col-md-6 col-sm-12">
+                                                        <div class="form-group" >
+                                                            <label>Job Name</label>
+                                                            <select class="custom-select" id="ft-custjobname{{customer.Mobile_no}}" onchange="custjobchange('{{customer.Mobile_no}}')" name="ft-custjobname">
+                                                                <option selected="">Choose...</option>
+                                                                <option value="brochure">Brochure</option>
+                                                                <option value="vcard">Business Card</option>
+                                                                <option value="Calendar">Calendar</option>
+                                                                <option value="flyers">Flyers</option>
+                                                                <option value="pamphlet">Pamphlet</option>
+                                                                <option value="other">other</option>
+                                                            </select>                                      
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 col-sm-12">
+                                                        <div class="form-group" >
+                                                            <label>Desiging Status</label>
+                                                            <select class="custom-select" id="ft-custdesigner{{customer.Mobile_no}}" name="ft-custdesigner">
+                                                                <option selected="">Choose...</option>
+                                                                <option value="Abhay Namdev">Abhay Namdev</option>
+                                                                <option value="Ayan Khan">Ayan Khan</option>
+                                                                <option value="Mohan Dantole">Mohan Dantole</option>
+                                                                <option value="Naveen Vishwakarma">Naveen Vishwakarma</option>
+                                                                <option value="Shruti Soni">Shruti Soni</option>
+                                                                <option value="Pending">Pending</option>
+                                                            </select>                                      
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6 col-sm-12">
+                                                        <div class="form-group" >
+                                                            <label for="size">Size</label>
+                                                            <select class="custom-select" name="ft-custsize" id="ft-custsize{{customer.Mobile_no}}">
+                                                                <option selected="">Choose...</option>
+                                                                <option value="5.5*8.5">5.5"*8.5"</option>
+                                                                <option value="8.5*11">8.5"*11"</option>
+                                                                <option value="11*17">11"*17"</option>
+                                                                <option value="12*18" >12"*18"</option>
+                                                                <option value="13*19">13"*19"</option>
+                                                                <option value="15*20">15"*20"</option>
+                                                                <option value="17*22">17"*22"</option>
+                                                                <option value="20*30">20"*30"</option>
+                                                                <option value="23*36">23"*36"</option>
+                                                                <option value="other" >other</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 col-sm-12">
+                                                        <div class="form-group">
+                                                            <label>Quantity</label>
+                                                            <input class="form-control" type="number" id="ft-custqty{{customer.Mobile_no}}" onchange="custratechng('{{customer.Mobile_no}}')" required/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6 col-sm-12">
+                                                        <div class="form-group" >
+                                                            <label>Print Sides</label>
+                                                            <select class="custom-select" id="ft-custpside{{customer.Mobile_no}}" >
+                                                                <option selected="">Choose...</option>
+                                                                <option value="single">Single</option>
+                                                                <option value="both">Both</option>
+                                                            </select> 
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 col-sm-12">
+                                                        <div class="form-group" >
+                                                            <label>Print Color</label>
+                                                            <select class="custom-select" id="ft-custprcolor{{customer.Mobile_no}}" >
+                                                                <option selected="">Choose...</option>
+                                                                <option value="single">Single</option>
+                                                                <option value="two">Two</option>
+                                                                <option value="three">Three</option>
+                                                                <option value="multi">Multi</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6 col-sm-12">
+                                                        <div class="form-group" >
+                                                            <label>Paper Name</label>
+                                                            <select class="custom-select" id="ft-custpname{{customer.Mobile_no}}" >
+                                                                <option selected="">Choose...</option>
+                                                                <option value="art">Art</option>
+                                                                <option value="maplithio">Maplithio</option>
+                                                            </select> 
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 col-sm-12">
+                                                        <div class="form-group" >
+                                                            <label>Paper GSM</label>
+                                                            <select class="custom-select" id="ft-custpgsm{{customer.Mobile_no}}" >
+                                                                <option selected="">Choose...</option>
+                                                                <option value="60">60</option>
+                                                                <option value="70">70</option>
+                                                                <option value="80">80</option>
+                                                                <option value="90">90</option>
+                                                                <option value="120">120</option>
+                                                                <option value="130">130</option>
+                                                                <option value="100">100</option>
+                                                                <option value="170">170</option>
+                                                                <option value="300">300</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6 col-sm-12">
+                                                        <div class="form-group" >
+                                                            <label>Paper color</label>
+                                                            <select class="custom-select" id="ft-custpcolor{{customer.Mobile_no}}" >
+                                                                <option selected="">Choose...</option>
+                                                                <option value="white">White</option>
+                                                                <option value="yellow">Yellow</option>
+                                                                <option value="pink">Pink</option>
+                                                                <option value="light">Light</option>
+                                                                <option value="blue">Blue</option>
+                                                            </select> 
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 col-sm-12">
+                                                        <div class="form-group" >
+                                                            <label>Lamination</label>
+                                                            <select class="custom-select" id="ft-custlamination{{customer.Mobile_no}}" >
+                                                                <option selected="">Choose...</option>
+                                                                <option value="na">NA</option>
+                                                                <option value="glossy">Glossy</option>
+                                                                <option value="matt">Matt</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6 col-sm-12">
+                                                        <div class="form-group" >
+                                                            <label>Folding</label>
+                                                            <select class="custom-select" id="ft-custfolding{{customer.Mobile_no}}" >
+                                                                <option selected="">Choose...</option>
+                                                                <option value="1">1</option>
+                                                                <option value="2">2</option>
+                                                                <option value="3">3</option>
+                                                            </select> 
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 col-sm-12">
+                                                        <div class="form-group" >
+                                                            <label>Perforated</label>
+                                                            <select class="custom-select" id="ft-custperforated{{customer.Mobile_no}}" >
+                                                                <option selected="">Choose...</option>
+                                                                <option value="yes">Yes</option>
+                                                                <option value="no">No</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6 col-sm-12">
+                                                        <div class="form-group" >
+                                                            <label>Rate</label>
+                                                            <input class="form-control" type="number" id="ft-custrate{{customer.Mobile_no}}" onchange="custratechng('{{customer.Mobile_no}}')" >
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 col-sm-12">
+                                                        <div class="form-group" >
+                                                            <label>Amount</label>
+                                                            <input class="form-control" type="number" id="ft-custamount{{customer.Mobile_no}}" disabled/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            </div>
+                                        </div>
+                                        {% comment %} <div id="myproducts1">
+                                            <div>
+                                                <a style={{"background-color:#702020;"}} class="newproducts btn btn-info active btn-color" onclick={{"addnewproduct()"}}>Add More</a>
+                                            </div>
+                                        </div> {% endcomment %}
+                                    </div>
+                                    <div class="modal-footer" style={"display:block;"} id="myproducts2">
+                                        <div class="row">
+                                            <div  style={{"text-align:right;"}}>
+                                                <button type="button" class="btn btn-primary btn-color" id="nc-submitbutton" onclick="savejobcust('{{customer.Mobile_no}}')">Alott to</button>
+                                                </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                </div>
+            </td>
+            
+        </tr>
+        {% endfor%}
+    </tbody>
+    {%endif%}
+    {% if table == "member"%}
+    <thead>
+        <tr>
+            <th>Member Name</th>
+            <th>Mobile No.</th>
+            <th>Email Id</th>
+            <th>Address</th>
+            <th>Department</th>
+            {% comment %} <th>MemberId</th> {% endcomment %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for member in Teams%}
+        <tr>
+            <td>{{member.Member_name}}</td>
+            <td>{{member.Mobile_no}}</td>
+            <td>{{member.Email_id}}</td>
+            <td>{{member.Area}} {{member.City}} {{member.State}} {{member.Pincode}}</td>
+            <td>{{member.Department}}</td>
+        </tr>
+        {% endfor%}
+    </tbody>
+    {%endif%}
+    {% if table == "product"%}
+    <thead>
+        <tr>
+            <th>Job Name</th>
+            <th>Size</th>
+            <th>Quantity</th>
+            <th>Rate</th>
+            <th>Amount</th>
+            {% comment %} <th>MemberId</th> {% endcomment %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in Product%}
+        <tr>
+            <td>{{product.job_name}}</td>
+            <td>{{product.size_name}}</td>
+            <td>{{product.Quantity}}</td>
+            <td>{{product.rate}}</td>
+            <td>{{product.amount}}</td>
+        </tr>
+        {% endfor%}
+    </tbody>
+    {%endif%}
+    {% if table == "jobstatus"%}
+    <thead>
+        <tr>
+            <th>Customer Name</th>
+            <th>Job Name</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for jobs in Jobs4status%}
+        <tr>
+            <td>{{jobs.Customer_mob_product}}</td>
+            <td>{{jobs.job_name}}</td>
+            <td>{{jobs.job_status}}</td>
+            <td>{{product.rate}}</td>
+        </tr>
+        {% endfor%}
+    </tbody>
+    {%endif%}
+</table>

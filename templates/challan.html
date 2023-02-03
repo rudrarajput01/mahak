@@ -1,0 +1,74 @@
+{% extends 'base1.html' %}
+{% load static %}
+{% block mystyle %}
+<style>
+    input.changinput {
+        width: 111px;
+    }
+    .formss {
+        padding: 5px 0px 5px 2px !important;
+        }
+</style>
+{% endblock %}
+{% block upjs %}
+
+
+{% endblock %}
+{% block pageheading %}
+Challan
+{% endblock %}
+
+{% block currpage %}
+Challan
+{% endblock %}
+{% block headerbutton %}
+
+<div class="dropdown">
+    <a class="btn btn-primary btn-color" href="#" role="button" data-toggle="modal" data-target="#new-challan">
+            Add New Challan
+        </a>
+    {% comment %} New Challan Invoice {% endcomment %}
+     {% include "addnew.html" with Challans=Challans%}
+</div>
+{% endblock %}    
+{% block content %}
+<div class="row-wrap mb-20 ">
+    <div class="card-box mb-30">
+        <div class="pd-20">
+            <h4 class="text-blue h4">Total Challan</h4>
+        </div>
+        <div class="pb-20">
+            
+            {% include "tabledata.html" with Challans=Challans %}
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="success-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-body text-center font-18">
+                <h3 class="mb-20" id="body-text"></h3>
+                <div class="mb-30 text-center"><img src={% static "/vendors/images/success.png"%}></div>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-primary btn-color" onclick=reloadpage()>Done</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}  
+
+<!-- MAIN CONTAINER END -->
+
+{% block js %}
+<!-- Datatable -->
+<script src={% static 'src/plugins/datatables/js/jquery.dataTables.min.js' %}></script>
+<script src={% static 'src/plugins/datatables/js/dataTables.bootstrap4.min.js' %}></script>
+<script src={% static 'src/plugins/datatables/js/dataTables.responsive.min.js' %}></script>
+<script src={% static 'src/plugins/datatables/js/responsive.bootstrap4.min.js' %}></script>
+<!-- Datatable Setting js -->
+<script src={% static 'vendors/scripts/datatable-setting.js' %}></script>
+<script src={% static 'js/adminpage.js' %}></script>
+{% endblock %}
+
+{% comment %} {% endcomment %}
